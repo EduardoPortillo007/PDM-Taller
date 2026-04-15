@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Taller 1</string>
+    <string name="pregunta1">¿Cual era el nombre de unos de los creadores de Android?</string>
+    <string name="pregunta2">¿Para qué dispositivos se creó el sistemaoperativo en un principo?</string>
+    <string name="pregunta3">Desde qué versión tenían apodos de comida las versiones de Android?</string>
+
+    <string name="P1_1">Andy Rubin</string>
+    <string name="P1_2">Samuel Deluque</string>
+    <string name="P1_3">Charly Kirk</string>
+    <string name="P1_4">Jeff Bezos</string>
+
+    <string name="P2_1">Para Lavadoras</string>
+    <string name="P2_2">Para Camaras digitales</string>
+    <string name="P2_3">Para Celulares</string>
+    <string name="P2_4">Para Reloges inteligentes</string>
+
+    <string name="P3_1">1.5</string>
+    <string name="P3_2">2.2</string>
+    <string name="P3_3">1.6</string>
+    <string name="P3_4">1.0</string>
+
+    <string name="msg1">0/3 pipipipi</string>
+    <string name="msg2">1/3 Muy mal</string>
+    <string name="msg3">2/3 Vamo mejorando</string>
+    <string name="msg4">3/3 Ere lo má duro de este sistema</string>
+</resources>
