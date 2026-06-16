@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.example.rankeuca.viewmodel.ViewModelCoso
@@ -21,8 +22,9 @@ import com.example.rankeuca.viewmodel.ViewModelCoso
 @Composable
 fun PantallaResultados(
     backStack: NavBackStack<NavKey>,
-    viewModelCoso: ViewModelCoso
+    questionId: Int
 ) {
+    val viewModelCoso: ViewModelCoso = viewModel(factory = ViewModelCoso.provideFactory(questionId))
     val options by viewModelCoso.option.collectAsState()
     val sortedOptions = options.sortedByDescending { it.votes }
     val pullState = rememberPullToRefreshState()

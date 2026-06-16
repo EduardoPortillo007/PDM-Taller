@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import coil3.compose.AsyncImage
@@ -25,8 +26,9 @@ import com.example.rankeuca.viewmodel.ViewModelCoso
 @Composable
 fun HomeScreen(
     backStack: NavBackStack<NavKey>,
-    viewModelCoso: ViewModelCoso
+    questionId: Int
 ) {
+    val viewModelCoso: ViewModelCoso = viewModel(factory = ViewModelCoso.provideFactory(questionId))
     val options by viewModelCoso.option.collectAsState()
     var votedOptionId by remember { mutableStateOf<Int?>(null) }
 
@@ -82,7 +84,7 @@ fun HomeScreen(
 
             if (votedOptionId != null) {
                 Button(
-                    onClick = { backStack.add(Routes.Resultados) },
+                    onClick = { backStack.add(Routes.Resultados(questionId)) },
                     modifier = Modifier.fillMaxWidth().padding(16.dp)
                 ) {
                     Text("Ir a resultados", fontSize = 18.sp)

@@ -6,48 +6,41 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.rankeuca.RankeUcaApplication
-import com.example.rankeuca.data.modelo.LugarOption
-import com.example.rankeuca.data.repository.OptionRepository
+import com.example.rankeuca.data.modelo.Question
+import com.example.rankeuca.data.repository.QuestionRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class ViewModelCoso(
-    private val optionRepository: OptionRepository,
-    private val questionId: Int
+class QuestionsViewModel(
+    private val questionRepository: QuestionRepository
 ) : ViewModel() {
 
-    val option: StateFlow<List<LugarOption>> = optionRepository.getOptions(questionId)
+    val questions: StateFlow<List<Question>> = questionRepository.getQuestions()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
 
-    fun addOption(name: String, imageUrl: String) {
+    fun addQuestion(title: String) {
         viewModelScope.launch {
-            optionRepository.addOption(name, imageUrl, questionId)
+            questionRepository.addQuestion(title)
         }
     }
 
-    fun deleteOption(option: LugarOption) {
+    fun deleteQuestion(question: Question) {
         viewModelScope.launch {
-            optionRepository.deleteOption(option)
-        }
-    }
-
-    fun vote(optionId: Int) {
-        viewModelScope.launch {
-            optionRepository.vote(optionId)
+            questionRepository.deleteQuestion(question)
         }
     }
 
     companion object {
-        fun provideFactory(questionId: Int) = viewModelFactory {
+        val Factory = viewModelFactory {
             initializer {
                 val app = this[APPLICATION_KEY] as RankeUcaApplication
-                ViewModelCoso(app.appProvider.provideOptionRepository(), questionId)
+                QuestionsViewModel(app.appProvider.provideQuestionRepository())
             }
         }
     }

@@ -11,21 +11,21 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.example.rankeuca.Routes
-import com.example.rankeuca.viewmodel.ViewModelCoso
+import com.example.rankeuca.viewmodel.QuestionsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminScreen(
+fun QuestionsScreen(
     backStack: NavBackStack<NavKey>,
-    questionId: Int
+    viewModel: QuestionsViewModel = viewModel(factory = QuestionsViewModel.Factory)
 ) {
-    val viewModelCoso: ViewModelCoso = viewModel(factory = ViewModelCoso.provideFactory(questionId))
-    val options by viewModelCoso.option.collectAsState()
+    val questions by viewModel.questions.collectAsState()
     var showSheet by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
@@ -35,10 +35,10 @@ fun AdminScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
-                title = { Text("Admin - Opciones") },
+                title = { Text("Preguntas") },
                 actions = {
                     TextButton(onClick = { showSheet = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Nueva opción")
+                        Icon(Icons.Default.Add, contentDescription = "Nueva pregunta")
                         Spacer(Modifier.width(4.dp))
                         Text("Nueva")
                     }
@@ -52,28 +52,35 @@ fun AdminScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            if (options.isEmpty()) {
+            if (questions.isEmpty()) {
                 Column(
-                    modifier = Modifier.fillMaxSize().weight(1f),
+                    modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("No hay opciones todavía", style = MaterialTheme.typography.titleMedium)
+                    Text("No hay preguntas todavía", style = MaterialTheme.typography.titleMedium)
                     Text("Toca Nueva para crear la primera.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().weight(1f),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(items = options, key = { it.id }) { option ->
-                        ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    items(items = questions, key = { it.id }) { question ->
+                        ElevatedCard(
+                            onClick = { backStack.add(Routes.Options(question.id)) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             ListItem(
-                                headlineContent = { Text(option.name) },
-                                supportingContent = { Text(option.imageURL, style = MaterialTheme.typography.bodySmall) },
+                                headlineContent = {
+                                    Text(question.title, fontWeight = FontWeight.Bold)
+                                },
+                                supportingContent = {
+                                    Text("${question.optionCount} opciones")
+                                },
                                 trailingContent = {
-                                    IconButton(onClick = { viewModelCoso.deleteOption(option) }) {
+                                    IconButton(onClick = { viewModel.deleteQuestion(question) }) {
                                         Icon(Icons.Default.Delete, contentDescription = "Borrar", tint = MaterialTheme.colorScheme.error)
                                     }
                                 }
@@ -82,21 +89,12 @@ fun AdminScreen(
                     }
                 }
             }
-
-            Spacer(Modifier.height(12.dp))
-
-            Button(
-                onClick = { backStack.add(Routes.Home(questionId)) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Ir a Votar")
-            }
         }
     }
 
     if (showSheet) {
-        OptionBottomSheet(
-            onSave = { name, imageUrl -> viewModelCoso.addOption(name, imageUrl) },
+        QuestionBottomSheet(
+            onSave = { title -> viewModel.addQuestion(title) },
             onDismiss = { showSheet = false }
         )
     }
