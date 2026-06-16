@@ -1,0 +1,69 @@
+package com.example.rankeuca.screens.home
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun OptionBottomSheet(
+    onSave: (name: String, imageUrl: String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState()
+    var name by rememberSaveable { mutableStateOf("") }
+    var imageUrl by rememberSaveable { mutableStateOf("") }
+    val isValid = name.isNotBlank() && imageUrl.isNotBlank()
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text("Nueva opción", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Nombre del lugar") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = imageUrl,
+                onValueChange = { imageUrl = it },
+                label = { Text("URL de la imagen") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onDismiss) { Text("Cancelar") }
+                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        if (isValid) {
+                            onSave(name.trim(), imageUrl.trim())
+                            onDismiss()
+                        }
+                    },
+                    enabled = isValid
+                ) { Text("Guardar") }
+            }
+        }
+    }
+}
